@@ -1,0 +1,85 @@
+# University Marketplace App  
+## Project Charter (One-Page Formal Report)
+
+**Project Title:** University Marketplace App (Semester Project Idea)  
+**Project Type:** Mobile Application Prototype  
+**Date:** March 26, 2026  
+**Prepared For:** Internal Design/Planning Use (Design Folder)
+
+### 1. Project Background
+University students frequently need a safe and convenient way to buy and sell used items (books, gadgets, accessories, etc.) within campus. Public marketplaces often create trust and safety concerns. This project proposes a campus-focused mobile marketplace that connects students in a controlled environment.
+
+### 2. Project Objective
+The objective is to develop a mobile marketplace application for university students to trade products within their campus community. The app will provide:
+- Secure student-focused access
+- Simple product listing and discovery
+- Communication between buyers and sellers
+- A structured and trusted alternative to open public platforms
+
+### 3. Scope Definition
+**In Scope**
+- Mobile app development for university students
+- User registration and authentication (individual accounts)
+- Product listing with category and image support
+- Search and filter functionality
+- In-app buyer-seller messaging
+- Basic profile management
+- Core UI screens:
+  - Splash
+  - Login/Signup
+  - Home
+  - Categories
+  - Product Detail
+  - Add Product
+  - Chat
+  - Profile
+
+**Out of Scope**
+- External payment gateway integration
+- Nationwide/open public marketplace deployment
+- Delivery/logistics management
+- Multi-university rollout (initially limited to PUCIT department)
+
+### 4. Stakeholders
+**Primary Stakeholders**
+- University Students (buyers/sellers)
+- Project Supervisor (academic guidance and evaluation)
+- Development Team (design, development, testing, delivery)
+
+**Secondary Stakeholders**
+- University Administration (potential future adopter)
+- Future Sponsors/Investors (for scale beyond prototype)
+
+### 5. Key Milestones
+1. Project approval and charter finalization  
+2. Requirements gathering and feature finalization  
+3. UI/UX design and Figma prototype completion  
+4. Database and backend design  
+5. Frontend mobile development  
+6. Integration and system testing  
+7. Bug fixing and refinement  
+8. Final submission and demonstration
+
+### 6. Assumptions and Constraints
+**Assumptions**
+- Students will use university email for authentication
+- Target users have compatible smartphones
+- Required development tools/resources are available
+- Campus environment supports peer-to-peer trading behavior
+
+**Constraints**
+- Limited semester timeline
+- Limited budget and team size
+- Prototype-level implementation target
+- Initial deployment restricted to one university department (PUCIT)
+
+### 7. Expected Outcome
+A functional prototype demonstrating a trusted campus marketplace where students can register, post listings, discover items, and chat securely within the university context. The output will be suitable for academic evaluation and future enhancement planning.
+
+### 8. Success Criteria
+- Core in-scope features are implemented and demonstrable
+- User flow (signup → list item → browse/search → contact seller) works end-to-end
+- Prototype is stable enough for final presentation
+- Out-of-scope boundaries are respected to maintain feasibility
+
+If you want, I can now convert this into a polished `.md` file and place it in your Design folder directly.
