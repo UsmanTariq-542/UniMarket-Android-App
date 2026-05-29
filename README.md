@@ -48,9 +48,9 @@ UniMarket is a professional, feature-rich Android application designed as a dedi
 
 ## 📸 Screenshots
 
-| Splash Screen | Login / Signup | Home Screen |
-| :---: | :---: | :---: |
-| ![Splash](https://via.placeholder.com/200x400?text=Splash+Screen) | ![Login](https://via.placeholder.com/200x400?text=Login+Screen) | ![Home](https://via.placeholder.com/200x400?text=Home+Screen) |
+| Splash Screen | Login Screen | Signup Screen | Home Screen | Product Details |
+| :---: | :---: | :---: | :---: | :---: |
+| ![Splash](screenshots/splash.png) | ![Login](screenshots/login.png) | ![Signup](screenshots/signup.png) | ![Home](screenshots/home.png) | ![Details](screenshots/details.png) |
 
 ## 🤝 Contributing
 
