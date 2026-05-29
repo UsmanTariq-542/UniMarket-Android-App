@@ -29,7 +29,6 @@ import androidx.navigation.navArgument
 import com.example.unimarketapp.ui.screens.*
 import com.example.unimarketapp.ui.theme.UniMarketAppTheme
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
@@ -59,10 +58,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             UniMarketAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFFBFBFB)) {
                     UniMarketApp()
                 }
             }
@@ -76,27 +72,23 @@ fun UniMarketApp() {
     val auth = FirebaseAuth.getInstance()
     var currentUser by remember { mutableStateOf(auth.currentUser) }
 
-    // Listen for Auth changes globally
     DisposableEffect(auth) {
         val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             currentUser = firebaseAuth.currentUser
         }
         auth.addAuthStateListener(listener)
-        onDispose {
-            auth.removeAuthStateListener(listener)
-        }
+        onDispose { auth.removeAuthStateListener(listener) }
     }
 
     if (showSplash) {
         SplashScreen(onContinue = { showSplash = false })
     } else {
         if (currentUser == null) {
-            AuthNavHost(onAuthSuccess = { 
-                // State is handled by AuthStateListener
-            })
+            AuthNavHost(onAuthSuccess = { currentUser = auth.currentUser })
         } else {
             MainScreen(onLogout = { 
                 auth.signOut()
+                currentUser = null
             })
         }
     }
@@ -107,16 +99,10 @@ fun AuthNavHost(onAuthSuccess: () -> Unit) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "login") {
         composable("login") { 
-            LoginScreen(
-                onLoginSuccess = onAuthSuccess,
-                onSignupClick = { navController.navigate("signup") }
-            ) 
+            LoginScreen(onLoginSuccess = onAuthSuccess, onSignupClick = { navController.navigate("signup") }) 
         }
         composable("signup") { 
-            SignupScreen(
-                onSignupSuccess = onAuthSuccess,
-                onLoginClick = { navController.popBackStack() }
-            ) 
+            SignupScreen(onSignupSuccess = onAuthSuccess, onLoginClick = { navController.popBackStack() }) 
         }
     }
 }
@@ -139,7 +125,7 @@ fun MainScreen(onLogout: () -> Unit) {
                 val adminDoc = db.collection("admins").document(currentUser.email!!).get().await()
                 isAdmin = isSuperAdmin || adminDoc.exists()
             } catch (e: Exception) {
-                Log.e("UniMarket", "Error checking admin status", e)
+                Log.e("UniMarket", "Admin check failed", e)
                 isAdmin = isSuperAdmin
             }
         }
@@ -147,8 +133,10 @@ fun MainScreen(onLogout: () -> Unit) {
 
     Scaffold(
         bottomBar = {
-            if (currentRoute in listOf("home", "chats", "add_product", "my_ads", "account", "admin_dashboard")) {
-                NavigationBar(containerColor = Color.White, tonalElevation = 12.dp) {
+            // Check if we are on a main tab to show the bottom bar
+            val showBottomBar = currentRoute in listOf("home", "chats", "add_product", "my_ads", "account", "admin_dashboard")
+            if (showBottomBar) {
+                NavigationBar(containerColor = Color.White, tonalElevation = 8.dp) {
                     NavigationBarItem(
                         selected = currentRoute == "home",
                         onClick = { navController.navigate("home") { popUpTo("home") { inclusive = true } } },
@@ -164,10 +152,9 @@ fun MainScreen(onLogout: () -> Unit) {
                     NavigationBarItem(
                         selected = currentRoute == "add_product",
                         onClick = { navController.navigate("add_product") },
-                        icon = { Icon(Icons.Default.AddCircle, null, modifier = Modifier.size(35.dp), tint = MaterialTheme.colorScheme.primary) },
+                        icon = { Icon(Icons.Default.AddCircle, null, modifier = Modifier.size(32.dp), tint = MaterialTheme.colorScheme.primary) },
                         label = { Text("Sell") }
                     )
-
                     NavigationBarItem(
                         selected = currentRoute == "my_ads",
                         onClick = { navController.navigate("my_ads") },
@@ -187,27 +174,29 @@ fun MainScreen(onLogout: () -> Unit) {
             }
         }
     ) { padding ->
-        NavHost(navController = navController, startDestination = "home", modifier = Modifier.padding(padding)) {
-            composable("home") { HomeScreen(navController) }
-            composable("chats") { ChatListScreen(navController) }
-            composable("account") { ProfileScreen(onLogout = onLogout) }
-            composable("my_ads") { MyAdsScreen() }
-            composable("admin_dashboard") { AdminDashboardScreen(navController, isSuperAdmin, onLogout) }
-            composable("manage_admins") { ManageAdminsScreen(navController) }
-            composable("add_product") { AddProductScreen(navController) }
-            composable(
-                route = "chat_detail/{otherUserEmail}",
-                arguments = listOf(navArgument("otherUserEmail") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val otherEmail = backStackEntry.arguments?.getString("otherUserEmail") ?: ""
-                ChatDetailScreen(otherEmail, onBack = { navController.popBackStack() })
-            }
-            composable(
-                route = "product_details/{productId}",
-                arguments = listOf(navArgument("productId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val productId = backStackEntry.arguments?.getString("productId") ?: ""
-                ProductDetailScreen(productId, navController)
+        Box(modifier = Modifier.padding(padding).fillMaxSize().background(Color(0xFFFBFBFB))) {
+            NavHost(navController = navController, startDestination = "home") {
+                composable("home") { HomeScreen(navController) }
+                composable("chats") { ChatListScreen(navController) }
+                composable("account") { ProfileScreen(onLogout = onLogout) }
+                composable("my_ads") { MyAdsScreen() }
+                composable("admin_dashboard") { AdminDashboardScreen(navController, isSuperAdmin, onLogout) }
+                composable("manage_admins") { ManageAdminsScreen(navController) }
+                composable("add_product") { AddProductScreen(navController) }
+                composable(
+                    route = "chat_detail/{otherUserEmail}",
+                    arguments = listOf(navArgument("otherUserEmail") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val otherEmail = backStackEntry.arguments?.getString("otherUserEmail") ?: ""
+                    ChatDetailScreen(otherEmail, onBack = { navController.popBackStack() })
+                }
+                composable(
+                    route = "product_details/{productId}",
+                    arguments = listOf(navArgument("productId") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val productId = backStackEntry.arguments?.getString("productId") ?: ""
+                    ProductDetailScreen(productId, navController)
+                }
             }
         }
     }
@@ -221,29 +210,14 @@ fun SplashScreen(onContinue: () -> Unit) {
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary),
+        modifier = Modifier.fillMaxSize().background(Color(0xFF3F51B5)),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                Icons.Default.School,
-                contentDescription = null,
-                modifier = Modifier.size(100.dp),
-                tint = Color.White
-            )
-            Text(
-                "UniMarket",
-                fontSize = 42.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White
-            )
-            Text(
-                "The Student Marketplace",
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.8f)
-            )
+            Icon(Icons.Default.School, null, modifier = Modifier.size(80.dp), tint = Color.White)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("UniMarket", fontSize = 36.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text("Student Marketplace", color = Color.White.copy(alpha = 0.7f), fontSize = 16.sp)
         }
     }
 }

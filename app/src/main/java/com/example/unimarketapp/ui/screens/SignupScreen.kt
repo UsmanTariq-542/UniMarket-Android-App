@@ -2,6 +2,7 @@ package com.example.unimarketapp.ui.screens
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,6 +45,7 @@ fun SignupScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .padding(24.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -58,7 +60,7 @@ fun SignupScreen(
         Text(
             text = "Join the student marketplace",
             fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.secondary,
+            color = Color.Gray,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
@@ -100,6 +102,7 @@ fun SignupScreen(
             placeholder = { Text("Enter secret code") },
             singleLine = true
         )
+        
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
@@ -127,34 +130,20 @@ fun SignupScreen(
                             "verified" to true
                         )
 
-                        // Try to save to Firestore with a timeout so we don't hang forever
                         try {
                             withTimeout(5000) {
                                 db.collection("users").document(uid).set(userData).await()
                             }
                         } catch (e: Exception) {
-                            Log.e("Signup", "Firestore save failed or timed out", e)
-                            // We proceed anyway because the Auth account was created
+                            Log.e("Signup", "Firestore save timed out - Permissions issue?", e)
                         }
 
                         loading = false
-                        Toast.makeText(context, "Welcome to UniMarket!", Toast.LENGTH_SHORT).show()
                         onSignupSuccess()
                     } catch (e: Exception) {
                         loading = false
-                        Log.e("SignupError", "Registration failed", e)
-                        val errorMessage = when (e) {
-                            is FirebaseAuthException -> {
-                                when (e.errorCode) {
-                                    "ERROR_EMAIL_ALREADY_IN_USE" -> "This email is already registered."
-                                    "ERROR_INVALID_EMAIL" -> "Invalid email format."
-                                    "ERROR_WEAK_PASSWORD" -> "Password is too weak."
-                                    else -> e.localizedMessage
-                                }
-                            }
-                            else -> e.localizedMessage
-                        }
-                        Toast.makeText(context, errorMessage ?: "Registration failed", Toast.LENGTH_LONG).show()
+                        Log.e("SignupError", "Auth error", e)
+                        Toast.makeText(context, e.localizedMessage ?: "Signup failed", Toast.LENGTH_LONG).show()
                     }
                 }
             },
