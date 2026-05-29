@@ -46,11 +46,6 @@ UniMarket is a professional, feature-rich Android application designed as a dedi
    - Connect an Android device or start an emulator (API level 24 or higher).
    - Click the "Run" button.
 
-## 📸 Screenshots
-
-| Splash Screen | Login Screen | Signup Screen | Home Screen | Product Details |
-| :---: | :---: | :---: | :---: | :---: |
-| ![Splash](screenshots/splash.png) | ![Login](screenshots/login.png) | ![Signup](screenshots/signup.png) | ![Home](screenshots/home.png) | ![Details](screenshots/details.png) |
 
 ## 🤝 Contributing
 
