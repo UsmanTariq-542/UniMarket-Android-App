@@ -16,10 +16,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.launch
@@ -39,8 +39,10 @@ fun SignupScreen(
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val auth = FirebaseAuth.getInstance()
-    val db = FirebaseFirestore.getInstance()
+    
+    // Firebase instances wrapped in try-catch or safe check for Preview
+    val auth = try { FirebaseAuth.getInstance() } catch (e: Exception) { null }
+    val db = try { FirebaseFirestore.getInstance() } catch (e: Exception) { null }
 
     Column(
         modifier = Modifier
@@ -107,6 +109,11 @@ fun SignupScreen(
 
         Button(
             onClick = {
+                if (auth == null || db == null) {
+                    Toast.makeText(context, "Firebase not available", Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+                
                 if (name.isEmpty() || email.isEmpty() || password.isEmpty() || regCode.isEmpty()) {
                     Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
                     return@Button
@@ -135,7 +142,7 @@ fun SignupScreen(
                                 db.collection("users").document(uid).set(userData).await()
                             }
                         } catch (e: Exception) {
-                            Log.e("Signup", "Firestore save timed out - Permissions issue?", e)
+                            Log.e("Signup", "Firestore save timed out", e)
                         }
 
                         loading = false
@@ -160,4 +167,10 @@ fun SignupScreen(
             Text("Already have an account? Login")
         }
     }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun SignupScreenPreview() {
+    SignupScreen(onSignupSuccess = {}, onLoginClick = {})
 }
